@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Stack;
 
 @Service
 public class AddressLineService {
@@ -20,7 +19,6 @@ public class AddressLineService {
         address = address.replaceAll("\\p{Punct}", "");
         String addressJson = invalidAddress;
         DetailedAddress detailedAddress = null;
-        //TODO check if string 'no' or 'nr' if so we split on it create the json.
         if (address.toLowerCase(Locale.ROOT).contains("no") || address.toLowerCase(Locale.ROOT).contains("nr")) {
             String[] splicedString = address.toLowerCase(Locale.ROOT).split("nr|no");
             detailedAddress = new DetailedAddress(splicedString[0], splicedString[1]);
@@ -42,17 +40,20 @@ public class AddressLineService {
             } else {
                 try {
                     String[] splitAddress = address.split("\\s+");
-                    Stack<String> stringsStack = new Stack<>();
+                    StringBuilder streetName = new StringBuilder();
+                    StringBuilder addressNumber = new StringBuilder();
+                    boolean streetComplete = false;
                     for (String s : splitAddress) {
-                        if (isNumber(s)) {
-                            stringsStack.pop();
-                            StringBuilder stringBuilder = new StringBuilder();
-                            stringsStack.forEach(stringBuilder::append);
-                            detailedAddress = new DetailedAddress(stringBuilder.toString(), s);
+                        if (isNumber(s) || streetComplete) {
+                            streetComplete = true;
+                            addressNumber.append(s);
+                            addressNumber.append(' ');
                         } else {
-                            stringsStack.push(s);
+                            streetName.append(s);
+                            streetName.append(' ');
                         }
                     }
+                    detailedAddress = new DetailedAddress(streetName.toString(), addressNumber.toString());
                     addressJson = jsonifyObject(Objects.requireNonNull(detailedAddress));
                 } catch (Exception e) {
                     logger.error("Failed to create json string");
