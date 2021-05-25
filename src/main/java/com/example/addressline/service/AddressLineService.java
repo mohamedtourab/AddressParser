@@ -18,41 +18,20 @@ public class AddressLineService {
     public String parseAddress(String address) {
         address = address.replaceAll("\\p{Punct}", "");
         String addressJson = invalidAddress;
-        DetailedAddress detailedAddress = null;
-        if (address.toLowerCase(Locale.ROOT).contains("no") || address.toLowerCase(Locale.ROOT).contains("nr")) {
+        DetailedAddress detailedAddress;
+        if (doesContainNoOrNr(address)) {
             String[] splicedString = address.toLowerCase(Locale.ROOT).split("nr|no");
             detailedAddress = new DetailedAddress(splicedString[0], splicedString[1]);
-            try {
-                addressJson = jsonifyObject(detailedAddress);
-                logger.info("Successfully parsed the address");
-            } catch (Exception e) {
-                logger.error("Failed to create json string");
-            }
+            addressJson = tryJsonifyObject(detailedAddress);
         } else {
             if (startsWithNumber(address)) {
-                try {
-                    detailedAddress = new DetailedAddress(address.substring(address.indexOf(' ') + 1), address.substring(0, address.indexOf(' ')));
-                    addressJson = jsonifyObject(detailedAddress);
-                    logger.info("Successfully parsed the address");
-                } catch (Exception e) {
-                    logger.error("Failed to create json string");
-                }
+                detailedAddress = new DetailedAddress(address.substring(address.indexOf(' ') + 1), address.substring(0, address.indexOf(' ')));
+                addressJson = tryJsonifyObject(detailedAddress);
             } else {
                 try {
-                    String[] splitAddress = address.split("\\s+");
                     StringBuilder streetName = new StringBuilder();
                     StringBuilder addressNumber = new StringBuilder();
-                    boolean streetComplete = false;
-                    for (String s : splitAddress) {
-                        if (isNumber(s) || streetComplete) {
-                            streetComplete = true;
-                            addressNumber.append(s);
-                            addressNumber.append(' ');
-                        } else {
-                            streetName.append(s);
-                            streetName.append(' ');
-                        }
-                    }
+                    handleAddressThatDoesntStartWithNumber(streetName, addressNumber, address);
                     detailedAddress = new DetailedAddress(streetName.toString(), addressNumber.toString());
                     addressJson = jsonifyObject(Objects.requireNonNull(detailedAddress));
                 } catch (Exception e) {
@@ -65,6 +44,21 @@ public class AddressLineService {
         return addressJson;
     }
 
+    private void handleAddressThatDoesntStartWithNumber(StringBuilder streetName, StringBuilder addressNumber, String address) {
+        String[] splitAddress = address.split("\\s+");
+        boolean streetComplete = false;
+        for (String s : splitAddress) {
+            if (isNumber(s) || streetComplete) {
+                streetComplete = true;
+                addressNumber.append(s);
+                addressNumber.append(' ');
+            } else {
+                streetName.append(s);
+                streetName.append(' ');
+            }
+        }
+    }
+
     private boolean startsWithNumber(String address) {
         return address.split("\\s+")[0].chars().allMatch(Character::isDigit);
     }
@@ -74,8 +68,23 @@ public class AddressLineService {
         return objectMapper.writeValueAsString(obj);
     }
 
+    private String tryJsonifyObject(DetailedAddress detailedAddress) {
+        String addressJson = invalidAddress;
+        try {
+            addressJson = jsonifyObject(detailedAddress);
+            logger.info("Successfully parsed the address");
+        } catch (Exception e) {
+            logger.error("Failed to create json string");
+        }
+        return addressJson;
+    }
+
     private boolean isNumber(String s) {
         return s.chars().allMatch(Character::isDigit);
+    }
+
+    private boolean doesContainNoOrNr(String address) {
+        return address.toLowerCase(Locale.ROOT).contains("no") || address.toLowerCase(Locale.ROOT).contains("nr");
     }
 }
 
