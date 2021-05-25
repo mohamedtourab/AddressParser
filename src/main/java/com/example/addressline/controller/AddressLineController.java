@@ -17,13 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/split_address")
 public class AddressLineController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final static String invalidAddress = "invalid address";
 
     @Autowired
     private AddressLineService addressLineService;
 
     @GetMapping
     public ResponseEntity<String> getDetailedAddress(@NonNull @RequestParam("address") String address) {
-        String outputAddress = addressLineService.parseAddress(address);
+        String addressCopy = address.replaceAll("\\p{Punct}", "");
+        if (addressCopy.length() < 5 || addressCopy.split("\\s+").length < 2)
+            return new ResponseEntity<>(invalidAddress, HttpStatus.BAD_REQUEST);
+        String outputAddress = addressLineService.parseAddress(addressCopy);
         logger.info("Detailed address is: " + outputAddress);
         return new ResponseEntity<>(outputAddress, HttpStatus.OK);
     }

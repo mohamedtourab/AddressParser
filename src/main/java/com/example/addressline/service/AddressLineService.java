@@ -16,7 +16,6 @@ public class AddressLineService {
     private final static String invalidAddress = "invalid address";
 
     public String parseAddress(String address) {
-        address = address.replaceAll("\\p{Punct}", "");
         String addressJson = invalidAddress;
         DetailedAddress detailedAddress;
         if (doesContainNoOrNr(address)) {
