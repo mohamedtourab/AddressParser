@@ -38,8 +38,6 @@ public class AddressLineService {
                 }
             }
         }
-
-
         return addressJson;
     }
 
