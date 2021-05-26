@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AddressLineService {
@@ -16,6 +18,7 @@ public class AddressLineService {
     private final static String invalidAddress = "invalid address";
 
     public String parseAddress(String address) {
+        address = address.replaceAll("\\p{Punct}", "");
         String addressJson = invalidAddress;
         DetailedAddress detailedAddress;
         if (doesContainNoOrNr(address)) {
@@ -42,6 +45,11 @@ public class AddressLineService {
     }
 
     private void handleAddressThatDoesntStartWithNumber(StringBuilder streetName, StringBuilder addressNumber, String address) {
+        Pattern pattern = Pattern.compile("((.*?)(\\d+)([A-Za-z]+))");
+        Matcher matcher = pattern.matcher(address);
+        if (matcher.find()) {
+            address = String.format("%s %s %s", matcher.group(2), matcher.group(3), matcher.group(4));
+        }
         String[] splitAddress = address.split("\\s+");
         boolean streetComplete = false;
         for (String s : splitAddress) {

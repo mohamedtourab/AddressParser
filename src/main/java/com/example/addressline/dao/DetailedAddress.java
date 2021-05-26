@@ -5,8 +5,8 @@ public class DetailedAddress {
     private String houseNumber;
 
     public DetailedAddress(String street, String houseNumber) {
-        this.street = street;
-        this.houseNumber = houseNumber;
+        this.street = street.trim();
+        this.houseNumber = houseNumber.trim();
     }
 
     public String getStreet() {
