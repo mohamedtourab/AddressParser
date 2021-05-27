@@ -23,7 +23,6 @@ public class AddressLineService {
         if (doesContainNoOrNr(address)) {
             String[] splicedString = address.toLowerCase(Locale.ROOT).split("nr|no");
             detailedAddress = new DetailedAddress(splicedString[0], splicedString[1]);
-            addressJson = tryJsonifyObject(detailedAddress);
         } else {
             if (startsWithNumber(address)) {
                 detailedAddress = new DetailedAddress(address.substring(address.indexOf(' ') + 1), address.substring(0, address.indexOf(' ')));
@@ -33,8 +32,8 @@ public class AddressLineService {
                 handleAddressThatDoesntStartWithNumber(streetName, addressNumber, address);
                 detailedAddress = new DetailedAddress(streetName.toString(), addressNumber.toString());
             }
-            addressJson = tryJsonifyObject(detailedAddress);
         }
+        addressJson = tryJsonifyObject(detailedAddress);
         return addressJson;
     }
 

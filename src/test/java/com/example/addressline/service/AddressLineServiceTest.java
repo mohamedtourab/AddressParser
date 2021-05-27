@@ -42,6 +42,21 @@ class AddressLineServiceTest {
         Assertions.assertEquals("rue de la revolution", address.getStreet());
         Assertions.assertEquals("4", address.getHouseNumber());
 
+        output = addressLineService.parseAddress("200 Broadway Av");
+        address = new ObjectMapper().readValue(output, DetailedAddress.class);
+        Assertions.assertEquals("Broadway Av", address.getStreet());
+        Assertions.assertEquals("200", address.getHouseNumber());
+
+        output = addressLineService.parseAddress("Calle Aduana, 29");
+        address = new ObjectMapper().readValue(output, DetailedAddress.class);
+        Assertions.assertEquals("Calle Aduana", address.getStreet());
+        Assertions.assertEquals("29", address.getHouseNumber());
+
+        output = addressLineService.parseAddress("Calle 39 No 1540");
+        address = new ObjectMapper().readValue(output, DetailedAddress.class);
+        Assertions.assertEquals("calle 39", address.getStreet());
+        Assertions.assertEquals("1540", address.getHouseNumber());
+
 
     }
 }
