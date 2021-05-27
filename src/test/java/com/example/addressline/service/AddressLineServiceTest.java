@@ -56,7 +56,5 @@ class AddressLineServiceTest {
         address = new ObjectMapper().readValue(output, DetailedAddress.class);
         Assertions.assertEquals("calle 39", address.getStreet());
         Assertions.assertEquals("1540", address.getHouseNumber());
-
-
     }
 }
