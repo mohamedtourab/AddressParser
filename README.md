@@ -12,6 +12,8 @@ number and returns them in a json formatted string.
 
 Import the project into Intellij IDE and click run !
 
+The default url for the project is: http://localhost:8080
+
 ## Endpoint
 
 - GET 'api/split_address'
