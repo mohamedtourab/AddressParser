@@ -23,7 +23,7 @@ The default url for the project is: http://localhost:8080
 - Get a json formatted string containing the street name and house number.
 - Request Arguments: address
   ```
-  ?address=Blaufeldweg 123
+  ?address=Blaufeldweg 123B
   ```
 - Returns: Json formatted string containing street name and house number
     ```
