@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,18 +27,13 @@ public class AddressLineService {
         } else {
             if (startsWithNumber(address)) {
                 detailedAddress = new DetailedAddress(address.substring(address.indexOf(' ') + 1), address.substring(0, address.indexOf(' ')));
-                addressJson = tryJsonifyObject(detailedAddress);
             } else {
-                try {
-                    StringBuilder streetName = new StringBuilder();
-                    StringBuilder addressNumber = new StringBuilder();
-                    handleAddressThatDoesntStartWithNumber(streetName, addressNumber, address);
-                    detailedAddress = new DetailedAddress(streetName.toString(), addressNumber.toString());
-                    addressJson = jsonifyObject(Objects.requireNonNull(detailedAddress));
-                } catch (Exception e) {
-                    logger.error("Failed to create json string");
-                }
+                StringBuilder streetName = new StringBuilder();
+                StringBuilder addressNumber = new StringBuilder();
+                handleAddressThatDoesntStartWithNumber(streetName, addressNumber, address);
+                detailedAddress = new DetailedAddress(streetName.toString(), addressNumber.toString());
             }
+            addressJson = tryJsonifyObject(detailedAddress);
         }
         return addressJson;
     }
@@ -81,6 +75,7 @@ public class AddressLineService {
         } catch (Exception e) {
             logger.error("Failed to create json string");
         }
+        logger.info(addressJson);
         return addressJson;
     }
 

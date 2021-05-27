@@ -4,6 +4,9 @@ public class DetailedAddress {
     private String street;
     private String houseNumber;
 
+    public DetailedAddress() {
+    }
+
     public DetailedAddress(String street, String houseNumber) {
         this.street = street.trim();
         this.houseNumber = houseNumber.trim();
